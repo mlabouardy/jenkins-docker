@@ -29,5 +29,7 @@ registryCredentials = new UsernamePasswordCredentialsImpl(
   registryPassword
 )
 
+println "--> creating credentials"
+
 store.addCredentials(domain, sshCredentials)
 store.addCredentials(domain, registryCredentials)

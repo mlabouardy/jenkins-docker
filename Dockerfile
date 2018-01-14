@@ -23,6 +23,7 @@ RUN mv /usr/share/jenkins/ref/plugins/* $JENKINS_HOME/plugins/
 
 EXPOSE 8080 50000
 
+COPY jenkins.CLI.xml $JENKINS_HOME/jenkins.CLI.xml
 COPY init.groovy.d $JENKINS_HOME/init.groovy.d
 
-CMD ["/usr/bin/java", "-jar", "/usr/share/jenkins/jenkins.war"]
+CMD ["/usr/bin/java", "-Djenkins.install.runSetupWizard=false", "-jar", "/usr/share/jenkins/jenkins.war"]
