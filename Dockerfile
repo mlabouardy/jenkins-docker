@@ -7,7 +7,8 @@ ENV JENKINS_HOME /var/jenkins_home
 
 RUN mkdir -p /usr/share/jenkins/ref
 
-RUN apt-get update && apt-get install -y --no-install-recommends wget curl unzip apt-transport-https openjdk-8-jdk
+RUN apt-get update && apt-get install -y --no-install-recommends wget curl openssh-client git \
+                      unzip apt-transport-https openjdk-8-jdk
 
 RUN wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
 RUN echo "deb https://pkg.jenkins.io/debian-stable binary/" >> /etc/apt/sources.list
