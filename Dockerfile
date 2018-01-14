@@ -1,18 +1,28 @@
-FROM jenkins/jenkins:2.89.2
+FROM ubuntu:16.04
 MAINTAINER mlabouardy <mohamed@labouardy.com>
 
-ENV JAVA_OPTS="-Djenkins.install.runSetupWizard=false"
+ENV JENKINS_UC https://updates.jenkins.io
+ENV JENKINS_UC_EXPERIMENTAL=https://updates.jenkins.io/experimental
+ENV JENKINS_HOME /var/jenkins_home
 
-USER root
-RUN echo "deb http://ppa.launchpad.net/ansible/ansible/ubuntu trusty main" >> /etc/apt/sources.list && \
-    apt-key adv --keyserver keyserver.ubuntu.com --recv-keys 93C4A3FD7BB9C367  && \
-    apt-get update && \
-    apt-get install -y ansible
+RUN mkdir -p /usr/share/jenkins/ref
 
-USER jenkins
+RUN apt-get update && apt-get install -y --no-install-recommends wget curl unzip apt-transport-https openjdk-8-jdk
+
+RUN wget -q -O - https://pkg.jenkins.io/debian-stable/jenkins.io.key | apt-key add -
+RUN echo "deb https://pkg.jenkins.io/debian-stable binary/" >> /etc/apt/sources.list
+RUN apt-get update && apt-get install -y jenkins
+RUN mkdir -p /var/jenkins_home && chown -R jenkins /var/jenkins_home
+
+COPY jenkins-support /usr/local/bin/jenkins-support
+COPY install-plugins.sh /usr/local/bin/plugins.sh
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
-RUN /usr/local/bin/install-plugins.sh < /usr/share/jenkins/ref/plugins.txt
+RUN /usr/local/bin/plugins.sh < /usr/share/jenkins/ref/plugins.txt
+RUN mkdir -p $JENKINS_HOME/plugins
+RUN mv /usr/share/jenkins/ref/plugins/* $JENKINS_HOME/plugins/
 
-COPY jenkins.CLI.xml $JENKINS_HOME/jenkins.CLI.xml
-COPY security.groovy /usr/share/jenkins/ref/init.groovy.d/security.groovy
-COPY setup-credentials.groovy /usr/share/jenkins/ref/init.groovy.d/setup-credentials.groovy
+EXPOSE 8080 50000
+
+COPY init.groovy.d $JENKINS_HOME/init.groovy.d
+
+CMD ["/usr/bin/java", "-jar", "/usr/share/jenkins/jenkins.war"]

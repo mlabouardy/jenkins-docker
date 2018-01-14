@@ -25,8 +25,8 @@ sshCredentials = new BasicSSHUserPrivateKey(
 registryCredentials = new UsernamePasswordCredentialsImpl(
   CredentialsScope.GLOBAL,
   "nexus", "Docker Registry Credentials",
-  nexusUsername,
-  nexusPassword
+  registryUsername,
+  registryPassword
 )
 
 store.addCredentials(domain, sshCredentials)
